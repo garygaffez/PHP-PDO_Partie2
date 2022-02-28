@@ -4,17 +4,17 @@ require_once(dirname(__FILE__).'/../utils/regex.php');
 
 require_once (dirname(__FILE__).'/../models/Patients.php');
 
-$id = intval(filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT));
-var_dump($id);
-$patient = Patients::find($id);
+require_once (dirname(__FILE__).'/../models/Appointment.php');
 
-var_dump($patient);
+$allAppointments = false;
+
+$id = intval(filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT));
 
 
 $errorCreatePatient = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    $firstname = trim(filter_input(INPUT_POST,'firstname',FILTER_SANITIZE_STRING));
+    $firstname = trim(filter_input(INPUT_POST,'firstname',FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
     if (!empty($firstname)) {
         $resultFirstname = filter_var($firstname, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/".REG_STR_NO_NUMBER."/")));
         if ($resultFirstname == false) {
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorCreatePatient['emptyInputFirstname'] = 'le prénom est obligatoire !';
     }
 
-    $lastname = trim(filter_input(INPUT_POST,'lastname',FILTER_SANITIZE_STRING));
+    $lastname = trim(filter_input(INPUT_POST,'lastname',FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
     if (!empty($lastname)) {
         $resultLastname = filter_var($lastname, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/".REG_STR_NO_NUMBER."/")));
         if ($resultLastname == false) {
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorCreatePatient['emptyInputMail'] = 'le mail est obligatoire !';  
     }
 
-    $phoneNumber = trim(filter_input(INPUT_POST,'phoneNumber',FILTER_SANITIZE_STRING));
+    $phoneNumber = trim(filter_input(INPUT_POST,'phoneNumber',FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
     if(!empty($phoneNumber)) {
         $resultphoneNumber = filter_var($phoneNumber, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/".REG_STR_PHONENUMBER."/")));
         if ($resultphoneNumber == false) {    
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    $birthdate = trim(filter_input(INPUT_POST, 'birthdate', FILTER_SANITIZE_STRING));
+    $birthdate = trim(filter_input(INPUT_POST, 'birthdate', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
     if(!empty($birthdate)){
         $month = date('m', strtotime($birthdate));
         $day = date('d', strtotime($birthdate));
@@ -68,20 +68,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($errorCreatePatient)) {
         
+        $updatePatient = new Patients($lastname, $firstname, $birthdate, $phoneNumber, $email);
 
-        $updatePatient = new Patients();
+        // $updatePatient->setLastname($lastname);
+        // $updatePatient->setFirstname($firstname);
+        // $updatePatient->setBirthdate($birthdate);
+        // $updatePatient->setPhone($phoneNumber);
+        // $updatePatient->setMail($email);
 
-        $updatePatient->setLastname($lastname);
-        $updatePatient->setFirstname($firstname);
-        $updatePatient->setBirthdate($birthdate);
-        $updatePatient->setPhone($phoneNumber);
-        $updatePatient->setMail($email);
+        $patient = Patients::find($id);
 
-        
-        $result = $updatePatient->update($id);
-
+       var_dump($patient);
+        $result = false;
+        if (!$updatePatient->isMailExists() || $email === $patient->mail) {
+            $result = $updatePatient->update($id);
+        }else {
+            $errorCreatePatient['errorMail'] = "L'e-mail existe déjà";
+        }
+        if ($result === true){
+            $result = "Tout est OK !";
+        }else {
+            $result = "Ce n'est pas bon !!";
+        }        
     }
+
+    
 }
+
+$listRdvPatients = Appointment::joinPatientRdv($id);
+
+$patient = Patients::find($id);
+ 
 
 
 include(dirname(__FILE__).'/../views/templates/head.php');
@@ -90,6 +107,7 @@ include(dirname(__FILE__).'/../views/templates/menu.php');
 
 if (($_SERVER["REQUEST_METHOD"] != "POST") || !empty($errorCreatePatient)) { 
     include(dirname(__FILE__).'/../views/profil-patient.php');
+    include(dirname(__FILE__).'/../views/liste-rendezvous.php');
 } else { 
     include(dirname(__FILE__).'/../views/confirmUpdate.php');
 }

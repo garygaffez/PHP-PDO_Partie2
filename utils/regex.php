@@ -19,3 +19,6 @@
 
 // REGEX pour code postal
     define("REG_STR_POLENUMBER", "^[A-Z0-9]{8}$");
+
+// REGEX pour datetime-local
+    define("REG_STR_DATETIMELOCAL", "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$");

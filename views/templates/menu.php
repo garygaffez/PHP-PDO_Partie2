@@ -19,7 +19,7 @@
         <div class="container is-fluid">
             <div class="columns">
 
-            <div class="column is-8">           
+            <div class="column is-6">           
                 <div class="navbar-item has-dropdown is-hoverable m-3">
                 <a class="navbar-link">Patients</a>
                 <div class="navbar-dropdown">
@@ -29,15 +29,25 @@
                 </div>
             </div>
 
-            <div class="column is-8">
+            <div class="column is-6">
                 <div class="navbar-item has-dropdown is-hoverable m-3">      
                 <a class="navbar-link">Rendez-vous</a>
                     <div class="navbar-dropdown">
-                        <a class="navbar-item">Ajouter un rendez-vous</a>
-                        <a class="navbar-item">Liste des rendez-vous</a>
+                        <a class="navbar-item" href="/controllers/ajout-rendezvous-controller.php">Ajouter un rendez-vous</a>
+                        <a class="navbar-item" href="/controllers/liste-rendezvous-controller.php">Liste des rendez-vous</a>
                     </div>
                 </div>
             </div>
+
+            <div class="column is-6">
+                <div class="navbar-item m-1">      
+                    <a class="navbar-link" href="/controllers/ajout-patient-rendezvous-controller.php">Ajout Patient et rendez-vous</a>
+                </div>
+            </div>
+
+
         </div>
     </div>
+
+    
 </nav>
