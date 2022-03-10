@@ -78,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $patient = Patients::find($id);
 
-       var_dump($patient);
         $result = false;
         if (!$updatePatient->isMailExists() || $email === $patient->mail) {
             $result = $updatePatient->update($id);
@@ -98,7 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $listRdvPatients = Appointment::joinPatientRdv($id);
 
 $patient = Patients::find($id);
- 
 
 
 include(dirname(__FILE__).'/../views/templates/head.php');

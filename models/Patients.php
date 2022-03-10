@@ -123,6 +123,8 @@ class Patients {
 
             $users = $sth->fetchAll();
 
+            var_dump($users);
+
             if (!$users) {
                 throw new PDOException(ERROR);
             }else if(empty($users)) {
@@ -179,7 +181,7 @@ class Patients {
             $sth->execute();
             //on récupere les données
             $patient = $sth->fetch();
-
+var_dump($patient);
             if (!$patient) {
                 throw new PDOException(ERROR_NOT_FOUND);
             }
